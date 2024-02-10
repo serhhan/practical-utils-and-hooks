@@ -1,61 +1,101 @@
-export const exportPdf = (elementId: string, fileName: string) => {
-  // Save the current document title
-  const originalTitle = document.title;
+"use client";
 
-  // Change the document title to the custom filename
-  document.title = fileName;
+import { useState, useRef, useEffect } from "react";
 
-  // Create an invisible iframe
-  const element = document.getElementById(elementId);
-  if (!element) {
-    console.error(`Element with ID ${elementId} not found`);
-    document.title = originalTitle; // Reset the document title
-    return;
-  }
+export const useSwipe = () => {
+  // Reference to the container element
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const iframe: HTMLIFrameElement = document.createElement("iframe"); // Specify type
-  iframe.style.position = "absolute";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "none";
-  document.body.appendChild(iframe);
+  // State to track if the mouse is being dragged
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Clone the element to print
-  const clonedElement = element.cloneNode(true) as HTMLElement;
+  // Starting X and Y coordinates for the drag
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
 
-  // Set cloned element to fit A4 page width
-  clonedElement.style.width = "210mm"; // A4 page width in mm
+  // State to indicate if a drag action has occurred
+  const [didDrag, setDidDrag] = useState(false);
 
-  // Append styles to iframe's head
-  const headHTML =
-    Array.from(document.getElementsByTagName("style"))
-      .map((style) => style.outerHTML)
-      .join("\n") +
-    Array.from(document.getElementsByTagName("link"))
-      .filter((link) => link.rel === "stylesheet")
-      .map((link) => link.outerHTML)
-      .join("\n");
+  // State to indicate if the click should be prevented
+  const [shouldPreventClick, setShouldPreventClick] = useState(false);
 
-  // Check if contentDocument is null
-  if (iframe.contentDocument) {
-    iframe.contentDocument.head.innerHTML = headHTML;
+  useEffect(() => {
+    // Handle mouse down event
+    const onMouseDown = (e: MouseEvent) => {
+      setIsDragging(true); // Set dragging to true
+      setDidDrag(false); // Reset drag state
+      setStartX(e.clientX); // Set the starting X coordinate
+      setStartY(e.clientY); // Set the starting Y coordinate
+    };
 
-    // Append cloned element to the iframe's body
-    iframe.contentDocument.body.appendChild(clonedElement);
+    // Handle mouse move event
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return; // Exit if not dragging
 
-    // Print the iframe's document if contentWindow is not null
-    iframe.contentWindow?.setTimeout(() => {
-      // Timeout to ensure styles are applied
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      setTimeout(() => {
-        document.body.removeChild(iframe); // Cleanup
-        document.title = originalTitle; // Reset the document title
-      }, 1000);
-    }, 500);
-  } else {
-    console.error("no content");
-    document.body.removeChild(iframe); // Cleanup
-    document.title = originalTitle; // Reset the document title
-  }
+      const x = e.clientX;
+      const y = e.clientY;
+      const dx = startX - x;
+      const dy = startY - y;
+
+      // Calculate the distance moved
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Check if distance moved is above a certain threshold
+      if (distance > 1) {
+        setDidDrag(true);
+      }
+
+      const container = containerRef.current;
+      if (container) {
+        container.scrollLeft += dx;
+        setStartX(x);
+        setStartY(y);
+      }
+    };
+
+    // Handle mouse up event
+    const onMouseUp = (e: MouseEvent) => {
+      setIsDragging(false); // Stop dragging
+
+      // Prevent click if it was a drag action
+      if (didDrag) {
+        setShouldPreventClick(true);
+        e.preventDefault();
+        e.stopPropagation();
+      } else {
+        setShouldPreventClick(false);
+      }
+      setDidDrag(false); // Reset drag state
+    };
+
+    // Handle click event to prevent or allow the action
+    const onClick = (e: MouseEvent) => {
+      if (shouldPreventClick) {
+        e.preventDefault();
+        e.stopPropagation();
+        setShouldPreventClick(false); // Reset for next click
+      }
+    };
+
+    const element = containerRef.current;
+
+    if (element !== null) {
+      element.addEventListener("mousedown", onMouseDown);
+      element.addEventListener("mousemove", onMouseMove);
+      element.addEventListener("mouseup", onMouseUp);
+      element.addEventListener("mouseleave", onMouseUp);
+      element.addEventListener("click", onClick);
+
+      // Cleanup event listeners
+      return () => {
+        element.removeEventListener("mousedown", onMouseDown);
+        element.removeEventListener("mousemove", onMouseMove);
+        element.removeEventListener("mouseup", onMouseUp);
+        element.removeEventListener("mouseleave", onMouseUp);
+        element.removeEventListener("click", onClick);
+      };
+    }
+  }, [isDragging, startX, startY, didDrag, shouldPreventClick]);
+
+  return containerRef;
 };
