@@ -39,3 +39,7 @@ The `useSwipe` hook is a custom React hook for enabling swipe functionality with
 ## useInView Hook
 
 The `useInView` hook uses the Intersection Observer API to efficiently detect when an element becomes visible within the viewport. This can be particularly useful for triggering animations, loading content lazily, or executing any other action that depends on the visibility of elements.
+
+## useMouseSide Hook
+
+The `useMouseSide` hook is a custom React hook designed to determine which side (left or right) of a specified element the mouse is currently hovering over. By utilizing this hook, developers can easily implement dynamic UI/UX effects based on the mouse's position relative to an element. This could include visual feedback, animations, or other interactive elements. The hook provides a simple and efficient way to enhance user interaction within your application.
