@@ -31,7 +31,8 @@ const MyComponent = () => {
 };
 ```
 
-##API
+## API
+
 useInView accepts an options object with the following optional properties:
 
 - `root`: The element that is used as the viewport for checking the visibility of the target. Defaults to the browser viewport if not specified.
