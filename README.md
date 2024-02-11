@@ -12,6 +12,7 @@ Below are the utilities and hooks included in this repository:
 
 1. **exportPdf Function**: A function to export the content of an HTML element as a PDF file.
 2. **useSwipe Hook**: A custom React hook for enabling swipe functionality within a container element.
+3. **useInView Hook**: A custom React hook leveraging the Intersection Observer API to detect when an element becomes visible in the viewport.
 
 ## Usage
 
@@ -34,3 +35,7 @@ The `exportPdf` function is designed to export the content of an HTML element as
 ## useSwipe Hook
 
 The `useSwipe` hook is a custom React hook for enabling swipe functionality within a container element. It allows users to swipe horizontally within the container to scroll its content.
+
+## useInView Hook
+
+The `useInView` hook uses the Intersection Observer API to efficiently detect when an element becomes visible within the viewport. This can be particularly useful for triggering animations, loading content lazily, or executing any other action that depends on the visibility of elements.
