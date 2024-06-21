@@ -1,66 +1,34 @@
-# addPagebreaks Function
+# exportPdf Function
 
-The `addPagebreaks` function dynamically adds visual page break indicators within a specified container on a web page. This utility is especially useful for web applications that need to visually segment content for printing or PDF generation, simulating a paginated document. It is designed to be framework-agnostic, enabling easy integration into projects using plain JavaScript, React, or other frameworks.
+The `exportPdf` function is designed to export the content of an HTML element as a PDF file. For those who want to export exact HTML/CSS without any library dependencies. It accepts two parameters:
 
-## Features
+1. `elementId`: The ID of the HTML element whose content is to be exported.
+2. `fileName`: The desired name of the PDF file.
 
-- Automatically calculates the cumulative height of content sections to identify where page breaks should occur.
-- Inserts a customizable visual indicator to signify the start of a new page.
-- Allows specifying the height at which to insert page breaks, accommodating various page sizes.
-- Begins page numbering at 2, accommodating scenarios where the first page is treated differently (e.g., a title page).
+The function performs the following steps:
 
-## Parameters
+1. **Save Current Document Title**: It saves the current document title to restore it later.
 
-- `pageHeight` (number): The height threshold in pixels at which a new page break is added. This should correspond to the height of your target page size minus any desired margins.
+2. **Change Document Title**: It changes the document title to the custom filename provided.
 
-## Usage
+3. **Create Invisible Iframe**: It creates an invisible `<iframe>` element and appends it to the document body.
 
-Below is an example showing how to use the `addPagebreaks` function in a simple HTML/JavaScript setup:
+4. **Clone HTML Element**: It clones the HTML element specified by the `elementId` parameter.
 
-### Basic HTML Structure
+5. **Set Cloned Element Size**: It sets the cloned element's width to fit an A4 page width.
 
-```html
-<div id="print-area">
-  <!-- Your content sections -->
-  <div class="section">Section 1 content here...</div>
-  <div class="section">Section 2 content here...</div>
-  <!-- Additional sections -->
-</div>
-```
+6. **Append Styles to Iframe's Head**: It appends all `<style>` and `<link>` elements from the main document to the `<iframe>`'s head.
 
-### JavaScript Integration
+7. **Print the Iframe's Document**: It prints the `<iframe>`'s document, ensuring that styles are applied.
+
+8. **Cleanup**: It removes the `<iframe>` from the document body and restores the original document title.
+
+![exportPdf Example](path/to/your/export-pdf-example.gif)
+
+## How to use
 
 ```javascript
-import { addPagebreaks } from './path/to/addPagebreaks';
+<div id="print-area" />;
 
-// Assuming you want to insert page breaks for an A4 page at 297mm height (approx. 1122px at 96 DPI)
-addPagebreaks(1122);
+exportPdf("print-area", "filename");
 ```
-
-### Integration with React
-
-In a React application, you might integrate `addPagebreaks` like this:
-
-```jsx
-import React, { useEffect } from 'react';
-import { addPagebreaks } from './path/to/addPagebreaks';
-
-const MyDocumentComponent = () => {
-  useEffect(() => {
-    // Ensure the DOM elements are rendered before calling addPagebreaks
-    setTimeout(() => addPagebreaks(1122), 0);
-  }, []);
-
-  return (
-    <div id="print-area">
-      <div className="section">Section 1 content here...</div>
-      <div className="section">Section 2 content here...</div>
-      {/* More sections */}
-    </div>
-  );
-};
-```
-
-## How It Works
-
-`addPagebreaks` iterates through elements with the class `.section` within the `#print-area` container, accumulating their heights until reaching the specified `pageHeight`. At this point, it inserts a div element styled as a page break indicator and resets the height accumulation for the next set of sections.
