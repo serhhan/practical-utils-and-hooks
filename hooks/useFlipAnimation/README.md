@@ -1,4 +1,7 @@
-# `useFlipAnimation` Hook
+`useFlipAnimation` Hook
+
+![useFlipAnimation example](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnJvbWg2cGttMjg4em94ZWdnaXVkNTBjdzF3OWxxNTVxcWp4Znd1ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tZ0AUsJTA18EzKO6Oc/giphy.gif)
+
 
 A React hook to manage reordering of items in a flex container with smooth animations using the FLIP technique (First, Last, Invert, Play). This hook is useful for implementing dynamic item reordering where an item needs to move to a specific position, such as the middle of a list, while animating the transition.
 
